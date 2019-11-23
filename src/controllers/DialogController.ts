@@ -11,25 +11,14 @@ export default class DialogController {
 			);
 	}
 
-	create(req: express.Request, res: express.Response) {
+	async create(req: express.Request, res: express.Response) {
 		const { author, partner, text } = req.body;
-		const postData = { author, partner };
-		const dialog = new DialogModel(postData);
-		dialog
+		const dialog = await new DialogModel({ author, partner }).save().catch(err => err);
+		res.json(dialog);
+		const message = await new MessageModel({ dialog: dialog._id, user: author, text })
 			.save()
-			.then((dialogObj: any) => {
-				res.json(dialogObj);
-				const message = new MessageModel({
-					dialog: dialogObj._id,
-					user: author,
-					text,
-				});
-				message
-					.save()
-					.then(() => res.json(dialogObj))
-					.catch(err => res.json(err));
-			})
-			.catch(err => res.json(err));
+			.catch(err => err);
+		res.json(message);
 	}
 
 	delete(req: express.Request, res: express.Response) {

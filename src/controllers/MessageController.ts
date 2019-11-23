@@ -13,19 +13,10 @@ export default class MessageController {
 			);
 	}
 
-	// show(req: express.Request, res: express.Response) {
-	// 	const id: string = req.params.id;
-	// 	DialogModel.findById(id, (err, user) =>
-	// 		err ? res.status(404).json({ message: 'Not found user :(' }) : res.json(user)
-	// 	);
-	// }
-
-	// getMe() {
-	// 	// TODO: make return info about me (autentification)
-	// }
-
 	create(req: express.Request, res: express.Response) {
-		const userID = '5dd12a79eb292f18e6492ca9';
+
+		const userID = '5dd592a3ee9d1e3fa8a36a65';
+
 		const postData = {
 			dialog: req.body.dialog_id,
 			user: userID,

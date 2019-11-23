@@ -1,5 +1,5 @@
 install:
 	npm install
 
-st:
-	npm start
+start:
+	npm run server
