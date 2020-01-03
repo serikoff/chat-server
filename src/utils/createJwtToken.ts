@@ -1,12 +1,15 @@
 import jwt from 'jsonwebtoken';
 import { reduce } from 'lodash';
 
-interface ILoginData {
+import dotenv from 'dotenv';
+dotenv.config();
+
+interface ISigninData {
 	email: string,
 	password: string,
 }
 
-export default (user: ILoginData) => {
+export default (user: ISigninData) => {
   let token = jwt.sign(
 		{
 			data: reduce(user, (result: any, value, key) => {

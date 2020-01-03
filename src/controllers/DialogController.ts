@@ -1,27 +1,48 @@
-import express from 'express';
+import { Request, Response } from 'express';
+import { Server } from 'socket.io';
+
 import { DialogModel, MessageModel } from '../models';
 
 export default class DialogController {
-	index(req: express.Request, res: express.Response) {
-		const { authorId } = req.query;
-		DialogModel.find({ author: authorId })
+	io: Server;
+	constructor(io: Server) {
+		this.io = io;
+	}
+
+	index = (req: Request, res: Response) => {
+		const { _id } = req.user;
+		DialogModel.find()
+			.or([{ author: _id }, { partner: _id }])
 			.populate(['author', 'partner'])
-			.exec((err, dialog) =>
-				err ? res.status(404).json({ message: 'Dialog not found :(' }) : res.json(dialog)
-			);
-	}
+			.populate({
+				path: 'lastMessage',
+				populate: {
+					path: 'user',
+				},
+			})
+			.exec((err, dialogs) => (err ? res.status(404).end() : res.json(dialogs).end()));
+	};
 
-	async create(req: express.Request, res: express.Response) {
-		const { author, partner, text } = req.body;
-		const dialog = await new DialogModel({ author, partner }).save().catch(err => err);
-		res.json(dialog);
-		const message = await new MessageModel({ dialog: dialog._id, user: author, text })
-			.save()
-			.catch(err => err);
-		res.json(message);
-	}
+	create = async (req: Request, res: Response) => {
+		const { partner, text } = req.body;
+		const author = req.user._id;
+		try {
+			const dialog: any = await new DialogModel({ author, partner }).save();
+			const message = await new MessageModel({
+				dialog: dialog._id,
+				user: author,
+				text,
+			}).save();
+			dialog['lastMessage'] = message._id;
+			this.io.emit('SERVER:DIALOG_CREATED', { dialog, message });
+			res.json({ dialog, message }).end();
+			await dialog.save();
+		} catch (err) {
+			res.status(500).end();
+		}
+	};
 
-	delete(req: express.Request, res: express.Response) {
+	delete = (req: Request, res: Response) => {
 		const { id } = req.params;
 		DialogModel.findOneAndRemove({ _id: id })
 			.then(dialog => {
@@ -30,5 +51,5 @@ export default class DialogController {
 					: res.json({ message: `Dialog is not found. Id: ${id}` });
 			})
 			.catch(err => res.json({ message: err }));
-	}
+	};
 }

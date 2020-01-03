@@ -1,9 +1,17 @@
+import { Request, Response } from 'express';
 import { verifyJwtToken } from '../utils';
 
-export default (req: any, res: any, next: any) => {
-	if (req.path === '/user/login'
-			|| req.path === '/user/registration'
-			//|| req.path === `${req.path}`
+declare module 'express' {
+  export interface Request {
+    user?: any;
+  }
+}
+
+export default (req: Request, res: Response, next: any) => {
+	if (
+			req.path === '/user/signin'
+			|| req.path === '/user/signup'
+			|| req.path === '/user/verify'
 			) {
 		return next();
 	}
@@ -12,12 +20,11 @@ export default (req: any, res: any, next: any) => {
 
 	verifyJwtToken(token)
 		.then((user: any) => {
-			req.user = user;
+			req.user = user.data._doc;
 			next();
 		})
 		.catch(err => {
-			res.status(403).json({ message: 'You are not autorized.' });
-			console.log(err);
-			console.log(`Autorization error! Token: ${token}`);
+			res.status(403).end();
+			//console.log(`Autorization error! Token: ${token}`); // refactoring - ip
 		});
 };
