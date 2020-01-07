@@ -29,6 +29,25 @@ export default class UserController {
 		);
 	};
 
+	findUsers = (req: Request, res: Response) => {
+		const myId = req.user._id;
+		const { name } = req.query;
+		const regex = new RegExp(name, 'i');
+		UserModel
+			.find()
+			.or([{ fullname: regex }, { email: regex }])
+			.exec((err, users) => {
+				const newUsers = users
+					.map(({ _id, fullname, email }) => ({_id, fullname, email }))
+					.filter(({ _id }) => _id.toString() !== myId);
+				if (err) {
+					console.log('err: findUsers', err);
+					res.status(500).end();
+				}
+				res.json(newUsers).end();
+			});
+	};
+
 	signUp = async (req: Request, res: Response) => {
 		const errors = validationResult(req);
 		if (!errors.isEmpty()) return res.status(422).json({ errors: errors.array() }).end();

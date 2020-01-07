@@ -25,6 +25,5 @@ export default (req: Request, res: Response, next: any) => {
 		})
 		.catch(err => {
 			res.status(403).end();
-			//console.log(`Autorization error! Token: ${token}`); // refactoring - ip
 		});
 };

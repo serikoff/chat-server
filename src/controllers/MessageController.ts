@@ -1,6 +1,8 @@
 import { Request, Response } from 'express';
 import { Server } from 'socket.io';
 
+import mongoose, { Schema, Document } from 'mongoose';
+
 import { MessageModel, DialogModel } from '../models';
 
 export default class MessageController {
@@ -53,14 +55,35 @@ export default class MessageController {
 		}
 	};
 
-	delete = (req: Request, res: Response) => {
-		const { id } = req.params;
-		MessageModel.findOneAndRemove({ _id: id })
-			.then(message =>
-				message
-					? res.json({ message: `Message deleted: ${id}` })
-					: res.json({ message: `Message is not found. Id: ${id}` })
-			)
-			.catch(err => res.json({ message: err }));
+	delete = async (req: Request, res: Response) => {
+		const { id } = req.query;
+		const { _id } = req.user;
+
+		try {
+			const messageForRemove: any = await MessageModel.findById(id);
+			if (messageForRemove.user.toString() !== _id) return res.status(404).end();
+			const dialogId = messageForRemove.dialog;
+			const messageId = messageForRemove._id;
+			await messageForRemove.remove();
+			const dialog: any = await DialogModel.findById(dialogId);
+			const lastMessageId = dialog.lastMessage.toString();
+			const newLastMessage: any = await MessageModel.findOne(
+					{ dialog: dialogId },
+					{},
+					{ sort: { createdAt: -1 } }
+				);
+
+			if (!newLastMessage) {
+				await DialogModel.findOneAndRemove({ _id: dialogId });
+			}
+			if (newLastMessage && lastMessageId === messageId.toString()) {
+				dialog.lastMessage = newLastMessage._id;
+				await dialog.save();
+			}
+
+			res.status(200).end();
+		} catch (err) {
+			res.status(500).end();
+		}
 	};
 }
