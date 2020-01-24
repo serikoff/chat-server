@@ -20,7 +20,18 @@ export default class DialogController {
 					path: 'user',
 				},
 			})
-			.exec((err, dialogs) => (err ? res.status(404).end() : res.json(dialogs).end()));
+			.exec((err, dialogs) => {
+				const newDialogs = dialogs.map((dialog: any) => {
+					const { author, partner, lastMessage } = dialog;
+					return {
+						...dialog._doc,
+						author: { ...author._doc, password: '' },
+						partner: { ...partner._doc, password: '' },
+						lastMessage: { ...lastMessage._doc, user: { ...lastMessage.user._doc, password: '' } },
+					};
+				});
+				return err ? res.status(404).end() : res.json(newDialogs).end();
+			});
 	};
 
 	create = async (req: Request, res: Response) => {
@@ -34,8 +45,12 @@ export default class DialogController {
 				text,
 			}).save();
 			dialog['lastMessage'] = message._id;
-			this.io.emit('SERVER:DIALOG_CREATED', { dialog, message });
-			res.json({ dialog, message }).end();
+			this.io.emit('SERVER:DIALOG_CREATED', {
+				dialog: { ...dialog._doc, lastMessage: message },
+				message,
+			});
+
+			res.status(200).end();
 			await dialog.save();
 		} catch (err) {
 			res.status(500).end();

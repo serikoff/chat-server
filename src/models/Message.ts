@@ -10,7 +10,7 @@ export interface IMessage extends Document {
 		type: string,
 		require: boolean,
 	};
-	unread: {
+	readed: {
 		type: boolean,
 		default: boolean,
 	};
@@ -32,13 +32,13 @@ const MessageSchema = new Schema(
 			type: String,
 			require: Boolean,
 		},
-		unread: {
+		readed: {
 			type: Boolean,
 			default: false,
 		},
-		//attachmens: []
+		attachments: [{ type: Schema.Types.ObjectId, ref: 'UploadFile' }],
 	},
-	{ timestamps: true }
+	{ timestamps: true, usePushEach: true }
 );
 
 const MessageModel = mongoose.model<IMessage>('Message', MessageSchema);

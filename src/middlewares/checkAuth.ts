@@ -20,7 +20,8 @@ export default (req: Request, res: Response, next: any) => {
 
 	verifyJwtToken(token)
 		.then((user: any) => {
-			req.user = user.data._doc;
+			const { last_seen, _id, email, fullname, avatar } = user.data._doc;
+			req.user = { last_seen, _id, email, fullname, avatar };
 			next();
 		})
 		.catch(err => {
