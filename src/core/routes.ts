@@ -21,7 +21,6 @@ export default (app: any, io: Server) => {
 	app.post('/user/signin', signInValidation, UserController.signIn);
 	app.post('/user/verify', UserController.verify);
 	app.get('/user/find', UserController.findUsers);
-	app.get('/user/:id', UserController.show);
 	app.delete('/user/:id', UserController.delete);
 
 	app.get('/dialogs', DialogController.index);

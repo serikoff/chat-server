@@ -1,14 +1,28 @@
 {
   "name": "chat-backend",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "backend",
-  "main": "index.js",
+  "author": "serikoff",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/serikoff/chat-server.git"
+  },
+  "keywords": [
+    "chat",
+    "server",
+    "backend"
+  ],
+  "license": "UNLICENSED",
+  "main": "src/index.js",
   "scripts": {
     "start": "ts-node src/index.ts",
-    "server": "nodemon src/index.ts"
+    "dev": "nodemon src/index.ts",
+    "type-check": "tsc --noEmit",
+    "type-check:watch": "npm run type-check -- --watch",
+    "build": "npm run build:types && npm run build:js",
+    "build:types": "tsc --emitDeclarationOnly",
+    "build:js": "babel src --out-dir lib --extensions \".ts,.tsx\" --source-maps inline"
   },
-  "author": "serikoff",
-  "license": "MIT",
   "dependencies": {
     "@types/bcrypt": "^3.0.0",
     "@types/date-fns": "^2.6.0",
@@ -24,6 +38,7 @@
     "@types/passport": "^1.0.2",
     "@types/socket.io": "^2.1.4",
     "@types/validator": "^10.11.3",
+    "babel-preset-es2017": "^6.24.1",
     "bcrypt": "^3.0.7",
     "body-parser": "^1.19.0",
     "cloudinary": "^1.18.1",
@@ -38,11 +53,18 @@
     "multer": "^1.4.2",
     "multer-storage-cloudinary": "^2.2.1",
     "socket.io": "^2.3.0",
-    "typescript": "^3.7.2",
     "validator": "^12.0.0"
   },
   "devDependencies": {
+    "@babel/cli": "^7.8.3",
+    "@babel/core": "^7.8.3",
+    "@babel/plugin-proposal-class-properties": "^7.8.3",
+    "@babel/plugin-transform-runtime": "^7.8.3",
+    "@babel/preset-env": "^7.8.3",
+    "@babel/preset-typescript": "^7.8.3",
+    "babel-polyfill": "^6.26.0",
     "nodemon": "^1.19.4",
-    "ts-node": "^8.5.0"
+    "ts-node": "^8.5.0",
+    "typescript": "^3.7.5"
   }
 }

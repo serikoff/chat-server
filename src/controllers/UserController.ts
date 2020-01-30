@@ -13,16 +13,6 @@ export default class UserController {
 		this.io = io;
 	}
 
-	show = (req: Request, res: Response) => {
-		const { id } = req.params;
-		UserModel.findById(id, (err, user: any) => {
-			const { last_seen, _id, email, fullname, avatar } = user;
-			return err
-				? res.status(404).end()
-				: res.json({ last_seen, _id, email, fullname, avatar }).end();
-		});
-	};
-
 	getMe = (req: Request, res: Response) => {
 		const { _id } = req.user;
 		UserModel.findById(_id, (err, user: any) => {

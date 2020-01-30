@@ -30,7 +30,6 @@ export default class MessageController {
 
 	create = async (req: Request, res: Response) => {
 		const { _id, last_seen, email, fullname, avatar } = req.user;
-		console.log(avatar)
 		const { text, dialog_id, attachments } = req.body;
 		try {
 			const message = await new MessageModel({
@@ -42,7 +41,6 @@ export default class MessageController {
 
 			message.populate('dialog', async (err, newMessage: any) => {
 				if (err) {
-					console.log(err);
 					res.status(500).end();
 				}
 
@@ -70,17 +68,6 @@ export default class MessageController {
 					},
 					attachments: newAttachments,
 				});
-				console.log({
-					...newMessage._doc,
-					user: {
-						_id,
-						avatar,
-						last_seen,
-						email,
-						fullname,
-					},
-					attachments: newAttachments,
-				})
 				res.status(200).end();
 			});
 		} catch (err) {
