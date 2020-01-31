@@ -3,7 +3,8 @@
 [![Maintainability](https://api.codeclimate.com/v1/badges/91f539a360f43a73835d/maintainability)](https://codeclimate.com/github/serikoff/chat-server/maintainability)
 
 This repository is the backend part of the chat.
- [Chat client](https://github.com/serikoff/chat-server)
+
+[Chat client](https://github.com/serikoff/chat-client)
 
 ##
   **Stack:**
@@ -29,12 +30,6 @@ $ sudo systemctl enable mongod.service
 
 [Install Node.js](https://github.com/nodesource/distributions)
 [Install PM2](https://pm2.keymetrics.io/docs/usage/quick-start/)
-
-```sh
-$ git clone https://github.com/serikoff/chat-server
-$ cd chat-server
-$ npm install
-```
 
 clone git and npm install
 ```sh

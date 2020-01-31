@@ -1,5 +1,5 @@
 module.exports = {
-  apps : [{
+  'Server-chat' : [{
     name: 'Server-chat',
     script: 'npm',
     args: 'start',
